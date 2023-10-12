@@ -13,7 +13,6 @@ public class Startup
     {
         var builder = new ConfigurationBuilder()
             .AddJsonFile("config.json");
-
         Configuration = builder.Build();
     }
 
@@ -22,5 +21,6 @@ public class Startup
         services.AddHttpClient();
         services.AddSingleton<IConfiguration>(Configuration);
         services.AddSingleton<GetTwseDataService>();
+        services.AddSingleton<DataProcessingService>();
     }
 }

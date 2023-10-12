@@ -2,6 +2,9 @@
 using System.Data;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System;
+using System.Collections.Generic;
+using httpclinet;
 
 public class GetTwseDataService
 {
@@ -23,13 +26,17 @@ public class GetTwseDataService
         twseUrl = configuration["twseUrl"] ?? "";
     }
 
-    public async Task<object> GetStockDailyTradingInfo() 
-        => await SendRequest(stockDailyTradingInfo);
+    /// <summary>
+    /// 股票每日交易資訊
+    /// </summary>
+    /// <returns></returns>
+    public async Task<StockDailyTrading[]> GetStockDailyTradingInfo()
+        => await SendRequest<StockDailyTrading[]>(stockDailyTradingInfo);
 
 
     //先預設都get，之後有要改再說
     //parameters先隨便用dictory接，有要改再說
-    private async Task<object?> SendRequest(string url, Dictionary<string,string> parameters = null)
+    private async Task<T> SendRequest<T>(string url, Dictionary<string, string> parameters = null)
     {
         using var httpClient = httpClientFactory.CreateClient();
         url = twseUrl + url;
@@ -37,7 +44,7 @@ public class GetTwseDataService
             url = url + "?" + string.Join('&', parameters.Select(n => $"{n.Key}={n.Value}"));
         using var responseMessage = await httpClient.GetAsync(url);
         if (!responseMessage.IsSuccessStatusCode) throw new HttpRequestException(await responseMessage.Content.ReadAsStringAsync());
-        var response = await responseMessage.Content.ReadFromJsonAsync<object>();
+        var response = await responseMessage.Content.ReadFromJsonAsync<T>();
         return response;
     }
 }
