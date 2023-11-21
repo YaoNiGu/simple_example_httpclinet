@@ -22,11 +22,11 @@ var dataService = serviceProvider.GetService<DataProcessingService>();
 #region 沒table就建table
 var existTableName = dataService!.QueryTableName().Result.ToArray();
 var codeDic = stockDailyTradingInfoResult.ToDictionary(n =>
-@$"{n.Name!.Replace("+", "plus")
+@$"_{n.Code}_{n.Name!.Replace("+", "plus")
            .Replace("&", "and")
            .Replace("-", "dash")
            .Replace(" ", "")
-           .Replace("*", "star")}_{n.Code}", n => new StockDailyTradingDbModel(n));
+           .Replace("*", "star")}", n => new StockDailyTradingDbModel(n));
 var createTableList = codeDic.Keys.Except(existTableName).ToList();
 dataService!.CreateStockDailyTradingTable(createTableList);
 #endregion

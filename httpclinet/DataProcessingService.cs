@@ -29,6 +29,9 @@ public class DataProcessingService
     {
         using (var conn = new SqlConnection(connString))
         {
+
+
+
             var returnData = await conn.QueryAsync<string>("SELECT [name] FROM sys.tables");
             return returnData.ToArray();
         }
@@ -50,12 +53,12 @@ public class DataProcessingService
                                     DataDate datetimeoffset(7) not null,
                                     Code varchar(10) NOT NULL,
                                     Name nvarchar(50) NOT NULL,
-                                    TradeVolume int  NULL,
-                                    TradeValue decimal  NULL,
-                                    OpeningPrice decimal  NULL,
-                                    HighestPrice decimal  NULL,
-                                    LowestPrice decimal  NULL,
-                                    ClosingPrice decimal  NULL,
+                                    TradeVolume bigint NULL,
+                                    TradeValue decimal (18,5) NULL, 
+                                    OpeningPrice decimal (18,5) NULL, 
+                                    HighestPrice decimal (18,5) NULL, 
+                                    LowestPrice decimal (18,5) NULL, 
+                                    ClosingPrice decimal (18,5) NULL,
                                     Change decimal  NULL,
                                     [Transaction] int  NULL,
                                     PRIMARY KEY (DataDate,Code)
