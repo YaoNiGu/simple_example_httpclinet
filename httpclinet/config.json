@@ -2,3 +2,4 @@
   "twseUrl": "https://openapi.twse.com.tw/v1/",
   "dbString": "Data Source=(LocalDB)\\MSSQLLocalDB;Database=BeComeRich; Integrated Security=SSPI;"
 }
+ 
