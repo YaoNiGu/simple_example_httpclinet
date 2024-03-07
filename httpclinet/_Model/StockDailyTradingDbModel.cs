@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace httpclinet
 {
+    /// <summary>
+    /// 股票每日交易模組
+    /// </summary>
     public class StockDailyTradingDbModel : StockDailyTrading
     {
         public StockDailyTradingDbModel(StockDailyTrading stock)

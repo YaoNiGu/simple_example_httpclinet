@@ -10,28 +10,11 @@ Startup startup = new Startup();
 startup.ConfigureServices(services);
 IServiceProvider serviceProvider = services.BuildServiceProvider();
 
+var dataProcessingHandler = new DataProcessingHandler(serviceProvider);
 
-//以下才是正式呼叫的程式
-var service = serviceProvider.GetService<GetTwseDataService>();
-//爬每日檔案
-var stockDailyTradingInfoResult = service!.GetStockDailyTradingInfo().Result;
-
-
-var dataService = serviceProvider.GetService<DataProcessingService>();
-
-#region 沒table就建table
-var existTableName = dataService!.QueryTableName().Result.ToArray();
-var codeDic = stockDailyTradingInfoResult.ToDictionary(n =>
-@$"_{n.Code}_{n.Name!.Replace("+", "plus")
-           .Replace("&", "and")
-           .Replace("-", "dash")
-           .Replace(" ", "")
-           .Replace("*", "star")}", n => new StockDailyTradingDbModel(n));
-var createTableList = codeDic.Keys.Except(existTableName).ToList();
-dataService!.CreateStockDailyTradingTable(createTableList);
-#endregion
-
-dataService!.InsertOrUpdateStockDailyTradingTable(codeDic);
-
-
-Console.WriteLine(stockDailyTradingInfoResult);
+//塞入資料
+dataProcessingHandler.SetStockDailyTradingTable();
+//確認欄位(平常可以關掉)
+dataProcessingHandler.CheckStockDailyTradingTable();
+//計算平均
+dataProcessingHandler.CalculateMovingAverageType();

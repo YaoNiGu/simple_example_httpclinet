@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace httpclinet
 {
+    /// <summary>
+    /// 股票每日交易資訊
+    /// </summary>
     public class StockDailyTrading
     {
         /// <summary>證券代號</summary>
