@@ -23,7 +23,7 @@ public class DataProcessingHandler
     public DataProcessingHandler(IServiceProvider serviceProvider)
     {
         dataProcessingService = serviceProvider.GetService<DataProcessingService>()!;
-        getTwseDataService= serviceProvider.GetService<GetTwseDataService>()!;
+        getTwseDataService = serviceProvider.GetService<GetTwseDataService>()!;
     }
 
     public void SetStockDailyTradingTable()
@@ -62,9 +62,14 @@ public class DataProcessingHandler
         dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.TwentyDayMovingAverage);
         dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.SixtyDayMovingAverage);
 
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeFiveDayMovingAverage);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeTenDayMovingAverage);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeTwentyDayMovingAverage);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeSixtyDayMovingAverage);
 
 
     }
+
 }
 
 

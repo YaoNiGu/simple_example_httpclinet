@@ -55,6 +55,10 @@ public class DataProcessingService
                 {"TenDayMovingAverage", "decimal (18,5)"},
                 {"TwentyDayMovingAverage","decimal (18,5)"},
                 {"SixtyDayMovingAverage", "decimal (18,5)"},
+                {"TradeVolumeFiveDayMovingAverage","decimal (18,5)"},
+                {"TradeVolumeTenDayMovingAverage", "decimal (18,5)"},
+                {"TradeVolumeTwentyDayMovingAverage","decimal (18,5)"},
+                {"TradeVolumeSixtyDayMovingAverage", "decimal (18,5)"}
             };
         using (var conn = new SqlConnection(connString))
         {
@@ -69,7 +73,7 @@ public class DataProcessingService
                                          BEGIN
                                          ALTER TABLE {tableName} ADD [{column.Key}] {column.Value} NULL
                                          END";
-                    conn.Execute(checkColumnExistenceQuery);
+                    conn.ExecuteAsync(checkColumnExistenceQuery);
                 }
             }
         }
@@ -145,7 +149,7 @@ public class DataProcessingService
             }
         }
     }
-
+ 
 
     /// <summary>
     /// 更新移動平均線資料
@@ -185,5 +189,48 @@ public class DataProcessingService
             }
         }
     }
+
+
+    /// <summary>
+    /// UpdateTradeVolumeMovingAverage
+    /// </summary>
+    /// <exception cref="NotImplementedException"></exception>
+    public void UpdateTradeVolumeMovingAverage(IEnumerable<string> tableNmaes, TradeVolumeMovingAverageType? averageType = null, DateTimeOffset? targetDate = null)
+    {
+        targetDate ??= DateTimeOffset.Now.Date;
+        var stringBuilder = new StringBuilder();
+        var averageDay =
+           averageType switch
+           {
+               TradeVolumeMovingAverageType.TradeVolumeFiveDayMovingAverage => 4,
+               TradeVolumeMovingAverageType.TradeVolumeTenDayMovingAverage => 9,
+               TradeVolumeMovingAverageType.TradeVolumeTwentyDayMovingAverage => 19,
+               TradeVolumeMovingAverageType.TradeVolumeSixtyDayMovingAverage => 59,
+               _ => throw new NotImplementedException()
+           };
+
+        using (var conn = new SqlConnection(connString))
+        {
+            foreach (var item in tableNmaes)
+            {
+                stringBuilder.Append(@$"
+                    UPDATE {item}
+                        SET {averageType.ToString()} = (              
+                               SELECT AVG(TradeVolume)
+                                   FROM (
+                                       SELECT TradeVolume
+                                       FROM {item}
+                                      WHERE DataDate >= DATEADD(DAY, -{averageDay}, @TargetDate) AND DataDate <= @TargetDate
+                                   ) AS SubQuery
+                               )
+                        WHERE DataDate = @TargetDate;");
+                Console.WriteLine($"正在塞入{item}的{averageType.ToString()}...");
+                conn.Execute(stringBuilder.ToString(), new { TargetDate = targetDate });
+                stringBuilder.Clear();
+            }
+        }
+    }
+
+
 }
 
