@@ -15,6 +15,6 @@ var dataProcessingHandler = new DataProcessingHandler(serviceProvider);
 //塞入資料
 dataProcessingHandler.SetStockDailyTradingTable();
 //確認欄位(平常可以關掉)
-dataProcessingHandler.CheckStockDailyTradingTable();
+// dataProcessingHandler.CheckStockDailyTradingTable();
 //計算平均
 dataProcessingHandler.CalculateMovingAverageType();
