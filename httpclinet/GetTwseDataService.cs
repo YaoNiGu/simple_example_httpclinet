@@ -14,7 +14,6 @@ public class GetTwseDataService
     //之後再看要不要都搬去組態
     //上市個股日成交資訊
     private readonly string stockDailyTradingInfo = "/exchangeReport/STOCK_DAY_ALL";
-
     /// <summary>
     /// 取得臺灣證券交易所資料的服務
     /// </summary>
@@ -32,6 +31,7 @@ public class GetTwseDataService
     /// <returns></returns>
     public async Task<StockDailyTrading[]> GetStockDailyTradingInfo()
         => await SendRequest<StockDailyTrading[]>(stockDailyTradingInfo);
+
 
 
     //先預設都get，之後有要改再說

@@ -21,6 +21,7 @@ public class Startup
         services.AddHttpClient();
         services.AddSingleton<IConfiguration>(Configuration);
         services.AddSingleton<GetTwseDataService>();
+        services.AddSingleton<GetOldTwseDataService>();
         services.AddSingleton<DataProcessingService>();
     }
 }

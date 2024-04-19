@@ -13,6 +13,31 @@ namespace httpclinet
     /// </summary>
     public class StockDailyTrading
     {
+        public StockDailyTrading(string? code = null,
+            string? name = null,
+            long? tradeVolume = null,
+            long? tradeValue = null,
+            decimal? openingPrice = null,
+            decimal? highestPrice = null,
+            decimal? lowestPrice = null,
+            decimal? closingPrice = null,
+            decimal? change = null,
+            long? transaction = null)
+        {
+            Code = code;
+            Name = name;
+            TradeVolume = tradeVolume;
+            TradeValue = tradeValue;
+            OpeningPrice = openingPrice;
+            HighestPrice = highestPrice;
+            LowestPrice = lowestPrice;
+            ClosingPrice = closingPrice;
+            Change = change;
+            Transaction = transaction;
+        }
+
+
+
         /// <summary>證券代號</summary>
         public string? Code { get; set; }
         /// <summary>證券名稱</summary>

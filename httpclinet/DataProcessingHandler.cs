@@ -8,6 +8,8 @@ using httpclinet;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using httpclinet._Define;
+using System.Runtime.InteropServices;
+using System.Data;
 
 public class DataProcessingHandler
 {
@@ -15,6 +17,8 @@ public class DataProcessingHandler
     private static DataProcessingService dataProcessingService;
     //GetTwseDataService(用於與證券平台溝通的服務)
     private static GetTwseDataService getTwseDataService;
+
+    private static GetOldTwseDataService getOldTwseDataService;
     /// <summary>
     /// 資料處理服務
     /// </summary>
@@ -24,13 +28,48 @@ public class DataProcessingHandler
     {
         dataProcessingService = serviceProvider.GetService<DataProcessingService>()!;
         getTwseDataService = serviceProvider.GetService<GetTwseDataService>()!;
+        getOldTwseDataService = serviceProvider.GetService<GetOldTwseDataService>()!;
     }
 
     public void SetStockDailyTradingTable()
     {
-        //爬每日檔案
         var stockDailyTradingInfoResult = getTwseDataService!.GetStockDailyTradingInfo().Result;
+        setData(stockDailyTradingInfoResult);
+    }
 
+    public void SetStockDailyTradingTable(DateTimeOffset date)
+    {
+        var existTableName = dataProcessingService!.QueryTableName().Result.ToArray();
+
+        var stocks = dataProcessingService!.QueryCodeByTableName(existTableName).ToList();
+
+        var stockDailyTradingsDic = new Dictionary<DateTimeOffset, List<StockDailyTrading>>();
+        stocks.ForEach(stock =>
+        {
+            Console.WriteLine($"開始轉換{date.ToString("yyyyMM")}的{stock.Item1}的資料...");
+            var datas = StockDailyTradings(getOldTwseDataService!.GetStockDailyTradingInfoByDateAndStockNo(date, stock.Item1).Result, stock.Item1, stock.Item2);
+
+            foreach (var data in datas)
+            {
+                if (stockDailyTradingsDic.TryGetValue(data.Key, out var value))
+                    stockDailyTradingsDic[data.Key].Add(data.Value);
+                else
+                    stockDailyTradingsDic.Add(data.Key, new List<StockDailyTrading>() { data.Value });
+            }
+        });
+        foreach (var stock in stockDailyTradingsDic)
+        {
+            Console.WriteLine($"開始寫入Key)的歷史資料...");
+
+            setData(stock.Value.ToArray(), stock.Key);
+        }
+    }
+
+
+
+
+    private static void setData(StockDailyTrading[] stockDailyTradingInfoResult, DateTimeOffset? setDate = null)
+    {
         var existTableName = dataProcessingService!.QueryTableName().Result.ToArray();
 
         //我就不拆服務了
@@ -45,7 +84,7 @@ public class DataProcessingHandler
         dataProcessingService!.CreateStockDailyTradingTable(createTableList);
         #endregion
         //塞資料
-        dataProcessingService!.InsertOrUpdateStockDailyTradingTable(codeDic);
+        dataProcessingService!.InsertOrUpdateStockDailyTradingTable(codeDic, setDate);
     }
 
     public void CheckStockDailyTradingTable()
@@ -54,22 +93,41 @@ public class DataProcessingHandler
         dataProcessingService!.CheckTableColumns(existTableName);
     }
 
-    public void CalculateMovingAverageType()
+    public void CalculateMovingAverageType(DateTimeOffset? targetDate = null)
     {
         var existTableName = dataProcessingService!.QueryTableName().Result.ToArray();
-        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.FiveDayMovingAverage);
-        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.TenDayMovingAverage);
-        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.TwentyDayMovingAverage);
-        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.SixtyDayMovingAverage);
+        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.FiveDayMovingAverage, targetDate);
+        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.TenDayMovingAverage, targetDate);
+        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.TwentyDayMovingAverage, targetDate);
+        dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.SixtyDayMovingAverage, targetDate);
 
-        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeFiveDayMovingAverage);
-        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeTenDayMovingAverage);
-        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeTwentyDayMovingAverage);
-        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeSixtyDayMovingAverage);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeFiveDayMovingAverage, targetDate);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeTenDayMovingAverage, targetDate);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeTwentyDayMovingAverage, targetDate);
+        dataProcessingService!.UpdateTradeVolumeMovingAverage(existTableName, TradeVolumeMovingAverageType.TradeVolumeSixtyDayMovingAverage, targetDate);
 
 
     }
 
+
+    private static Dictionary<DateTimeOffset, StockDailyTrading> StockDailyTradings(StocksTradeMonthly stocksTradeMonthly, string code, string name)
+    {
+        if (stocksTradeMonthly?.data == null)
+            return new Dictionary<DateTimeOffset, StockDailyTrading>();
+        return stocksTradeMonthly.data.ToDictionary(
+             n => DateTimeOffset.Parse(n[0]),
+             n => new StockDailyTrading(code,
+                 name,
+                 long.TryParse(n[1].Replace(",", ""), out var n1) ? n1 : 0,
+                 long.TryParse(n[2].Replace(",", ""), out var n2) ? n2 : 0,
+                 decimal.TryParse(n[3], out var n3) ? n3 : 0,
+                 decimal.TryParse(n[4], out var n4) ? n4 : 0,
+                 decimal.TryParse(n[5], out var n5) ? n5 : 0,
+                 decimal.TryParse(n[6], out var n6) ? n6 : 0,
+                 decimal.TryParse(n[7].Replace("+", "").Replace("X", ""), out var n7) ? n7 : 0,
+                 long.Parse(n[8].Replace(",", ""))
+                 ));
+    }
 }
 
 

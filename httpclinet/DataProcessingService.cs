@@ -36,6 +36,16 @@ public class DataProcessingService
         }
     }
 
+    public (string,string)[] QueryCodeByTableName(params string[] tableName)
+    {
+        using (var conn = new SqlConnection(connString))
+        {
+            var returnData = tableName.Select(n =>
+                conn.QueryAsync<(string,string)>($"SELECT  Code,Name FROM {n}").Result.FirstOrDefault()).ToArray();
+            return returnData;
+        }
+    }
+
 
     public void CheckTableColumns(IEnumerable<string> tableNames)
     {
@@ -123,9 +133,9 @@ public class DataProcessingService
     /// 依照取得的資料塞入各TABLE
     /// </summary>
     /// <param name="dics"></param>
-    public void InsertOrUpdateStockDailyTradingTable(Dictionary<string, StockDailyTradingDbModel> dics)
+    public void InsertOrUpdateStockDailyTradingTable(Dictionary<string, StockDailyTradingDbModel> dics,DateTimeOffset? insertDate =null)
     {
-        var insertDate = DateTimeOffset.Now.Date;
+         insertDate ??= DateTimeOffset.Now.Date;
         using (var conn = new SqlConnection(connString))
         {
             foreach (var item in dics)
@@ -149,7 +159,7 @@ public class DataProcessingService
             }
         }
     }
- 
+
 
     /// <summary>
     /// 更新移動平均線資料
