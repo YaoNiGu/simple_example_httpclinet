@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using httpclinet._Define;
 using System.Runtime.InteropServices;
 using System.Data;
+using System.Globalization;
 
 public class DataProcessingHandler
 {
@@ -115,7 +116,7 @@ public class DataProcessingHandler
         if (stocksTradeMonthly?.data == null)
             return new Dictionary<DateTimeOffset, StockDailyTrading>();
         return stocksTradeMonthly.data.ToDictionary(
-             n => DateTimeOffset.Parse(n[0]),
+             n => transferChineseYearToCE(n[0]),
              n => new StockDailyTrading(code,
                  name,
                  long.TryParse(n[1].Replace(",", ""), out var n1) ? n1 : 0,
@@ -127,6 +128,14 @@ public class DataProcessingHandler
                  decimal.TryParse(n[7].Replace("+", "").Replace("X", ""), out var n7) ? n7 : 0,
                  long.Parse(n[8].Replace(",", ""))
                  ));
+    }
+
+
+    private static DateTimeOffset transferChineseYearToCE(string cy)
+    {
+        CultureInfo culture = new CultureInfo("zh-TW");
+        culture.DateTimeFormat.Calendar = new TaiwanCalendar();
+        return DateTimeOffset.Parse(cy, culture);
     }
 }
 
