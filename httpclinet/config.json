@@ -1,6 +1,6 @@
 {
   "twseUrl": "https://openapi.twse.com.tw/v1/",
   "oldTwseUrl": "https://www.twse.com.tw/",
-  "dbString": "Data Source=(LocalDB)\\MSSQLLocalDB;Database=BeComeRich; Integrated Security=SSPI;"
+  "dbString": "Server=localhost;Integrated security=SSPI;database=BeComeRich;"
 }
  

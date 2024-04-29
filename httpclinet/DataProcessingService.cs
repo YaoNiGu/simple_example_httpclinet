@@ -166,15 +166,15 @@ public class DataProcessingService
     /// </summary>
     public void UpdateMovingAverage(IEnumerable<string> tableNmaes, MovingAverageType? averageType = null, DateTimeOffset? targetDate = null)
     {
-        targetDate ??= DateTimeOffset.Now.Date;
+        // targetDate ??= DateTimeOffset.Now.Date;
         var stringBuilder = new StringBuilder();
         var averageDay =
            averageType switch
            {
-               MovingAverageType.FiveDayMovingAverage => 4,
-               MovingAverageType.TenDayMovingAverage => 9,
-               MovingAverageType.TwentyDayMovingAverage => 19,
-               MovingAverageType.SixtyDayMovingAverage => 59,
+               MovingAverageType.FiveDayMovingAverage => 5,
+               MovingAverageType.TenDayMovingAverage => 10,
+               MovingAverageType.TwentyDayMovingAverage => 20,
+               MovingAverageType.SixtyDayMovingAverage => 60,
                _ => throw new NotImplementedException()
            };
 
@@ -187,13 +187,15 @@ public class DataProcessingService
                         SET {averageType.ToString()} = (              
                                SELECT AVG(ClosingPrice)
                                    FROM (
-                                       SELECT ClosingPrice
-                                       FROM {item}
-                                      WHERE DataDate >= DATEADD(DAY, -{averageDay}, @TargetDate) AND DataDate <= @TargetDate
-                                   ) AS SubQuery
-                               )
+                                    SELECT TOP {averageDay} ClosingPrice
+                                        FROM {item}
+                                        WHERE DataDate <= @TargetDate
+                                        ORDER BY DataDate DESC
+                               ) AS SubQuery
+                            )   
                         WHERE DataDate = @TargetDate;");
                 Console.WriteLine($"正在塞入{item}的{averageType.ToString()}...");
+                Console.WriteLine(averageDay);
                 conn.Execute(stringBuilder.ToString(), new { TargetDate = targetDate });
                 stringBuilder.Clear();
             }
@@ -207,15 +209,15 @@ public class DataProcessingService
     /// <exception cref="NotImplementedException"></exception>
     public void UpdateTradeVolumeMovingAverage(IEnumerable<string> tableNmaes, TradeVolumeMovingAverageType? averageType = null, DateTimeOffset? targetDate = null)
     {
-        targetDate ??= DateTimeOffset.Now.Date;
+        // targetDate ??= DateTimeOffset.Now.Date;
         var stringBuilder = new StringBuilder();
         var averageDay =
            averageType switch
            {
-               TradeVolumeMovingAverageType.TradeVolumeFiveDayMovingAverage => 4,
-               TradeVolumeMovingAverageType.TradeVolumeTenDayMovingAverage => 9,
-               TradeVolumeMovingAverageType.TradeVolumeTwentyDayMovingAverage => 19,
-               TradeVolumeMovingAverageType.TradeVolumeSixtyDayMovingAverage => 59,
+               TradeVolumeMovingAverageType.TradeVolumeFiveDayMovingAverage => 5,
+               TradeVolumeMovingAverageType.TradeVolumeTenDayMovingAverage => 10,
+               TradeVolumeMovingAverageType.TradeVolumeTwentyDayMovingAverage => 20,
+               TradeVolumeMovingAverageType.TradeVolumeSixtyDayMovingAverage => 60,
                _ => throw new NotImplementedException()
            };
 
@@ -228,9 +230,10 @@ public class DataProcessingService
                         SET {averageType.ToString()} = (              
                                SELECT AVG(TradeVolume)
                                    FROM (
-                                       SELECT TradeVolume
+                                       SELECT TOP {averageDay} TradeVolume
                                        FROM {item}
-                                      WHERE DataDate >= DATEADD(DAY, -{averageDay}, @TargetDate) AND DataDate <= @TargetDate
+                                       WHERE DataDate <= @TargetDate
+                                        ORDER BY DataDate DESC
                                    ) AS SubQuery
                                )
                         WHERE DataDate = @TargetDate;");

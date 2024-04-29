@@ -47,7 +47,7 @@ public class DataProcessingHandler
         var stockDailyTradingsDic = new Dictionary<DateTimeOffset, List<StockDailyTrading>>();
         stocks.ForEach(stock =>
         {
-            Console.WriteLine($"開始轉換{date.ToString("yyyyMM")}的{stock.Item1}的資料...");
+            Console.WriteLine($"開始轉換{date.ToString("yyyyMMdd")}的{stock.Item1}的資料...");
             var datas = StockDailyTradings(getOldTwseDataService!.GetStockDailyTradingInfoByDateAndStockNo(date, stock.Item1).Result, stock.Item1, stock.Item2);
 
             foreach (var data in datas)
@@ -94,7 +94,7 @@ public class DataProcessingHandler
         dataProcessingService!.CheckTableColumns(existTableName);
     }
 
-    public void CalculateMovingAverageType(DateTimeOffset? targetDate = null)
+    public void CalculateMovingAverageType(DateTimeOffset? targetDate)
     {
         var existTableName = dataProcessingService!.QueryTableName().Result.ToArray();
         dataProcessingService!.UpdateMovingAverage(existTableName, MovingAverageType.FiveDayMovingAverage, targetDate);
