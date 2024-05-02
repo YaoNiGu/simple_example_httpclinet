@@ -83,7 +83,7 @@ public class DataProcessingService
                                          BEGIN
                                          ALTER TABLE {tableName} ADD [{column.Key}] {column.Value} NULL
                                          END";
-                    conn.ExecuteAsync(checkColumnExistenceQuery);
+                    conn.Execute(checkColumnExistenceQuery);
                 }
             }
         }
@@ -122,6 +122,10 @@ public class DataProcessingService
                                     TenDayMovingAverage decimal (18,5)   NULL, 
                                     TwentyDayMovingAverage decimal (18,5)  NULL, 
                                     SixtyDayMovingAverage decimal (18,5) NULL 
+                                    TradeVolumeFiveDayMovingAverage decimal (18,5) NULL,
+                                    TradeVolumeTenDayMovingAverage decimal (18,5) NULL,
+                                    TradeVolumeTwentyDayMovingAverage decimal (18,5) NULL,
+                                    TradeVolumeSixtyDayMovingAverage decimal (18,5) NULL,
                                     PRIMARY KEY (DataDate,Code)
                                 );");
             }

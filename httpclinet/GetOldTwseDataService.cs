@@ -51,6 +51,8 @@ public class GetOldTwseDataService
         if (parameters != null)
             url = url + "?" + string.Join('&', parameters.Select(n => $"{n.Key}={n.Value}"));
         using var responseMessage = await httpClient.GetAsync(url);
+        // 印出抓取的url，確認有沒有錯
+        Console.WriteLine(url);
         if (!responseMessage.IsSuccessStatusCode) throw new HttpRequestException(await responseMessage.Content.ReadAsStringAsync());
         var response = await responseMessage.Content.ReadFromJsonAsync<T>();
         return response;
