@@ -1,6 +1,7 @@
 {
   "twseUrl": "https://openapi.twse.com.tw/v1/",
   "oldTwseUrl": "https://www.twse.com.tw/",
+  "tpexUrl": "https://www.tpex.org.tw/openapi/v1/",
   "dbString": "Data Source=(LocalDB)\\MSSQLLocalDB;Database=BeComeRich; Integrated Security=SSPI;"
 }
  
