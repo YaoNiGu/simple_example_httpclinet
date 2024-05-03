@@ -22,6 +22,7 @@ public class Startup
         services.AddSingleton<IConfiguration>(Configuration);
         services.AddSingleton<GetTwseDataService>();
         services.AddSingleton<GetOldTwseDataService>();
+        services.AddSingleton<GetTpexDataService>();
         services.AddSingleton<DataProcessingService>();
     }
 }
