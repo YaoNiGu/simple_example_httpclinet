@@ -13,23 +13,24 @@ IServiceProvider serviceProvider = services.BuildServiceProvider();
 var dataProcessingHandler = new DataProcessingHandler(serviceProvider);
 
 //起始時間結束時間你自己訂
-var endDate = DateTimeOffset.Now;
+// var endDate = DateTimeOffset.Now;
 
-for (var startDate = endDate.AddYears(-1); startDate < endDate; startDate.AddMonths(1))
-{
-    var lastDayOfMonth = new DateTime(startDate.Year, startDate.Month + 1, 1).AddDays(-1);
-    dataProcessingHandler.SetStockDailyTradingTable(lastDayOfMonth);
-}
+// for (var startDate = endDate.AddYears(-1); startDate < endDate; startDate.AddMonths(1))
+// {
+//     var lastDayOfMonth = new DateTime(startDate.Year, startDate.Month + 1, 1).AddDays(-1);
+//     dataProcessingHandler.SetStockDailyTradingTable(lastDayOfMonth);
+// }
 
-for (var startDate = endDate.AddYears(-1); startDate < endDate; startDate.AddDays(1))
-{
-    dataProcessingHandler.CalculateMovingAverageType(startDate);
-}
+// for (var startDate = endDate.AddYears(-1); startDate < endDate; startDate.AddDays(1))
+// {
+//     dataProcessingHandler.CalculateMovingAverageType(startDate);
+// }
 
 
 ////塞入資料
-//dataProcessingHandler.SetStockDailyTradingTable();
+// dataProcessingHandler.SetStockDailyTradingTable();
 ////確認欄位(平常可以關掉)
-//dataProcessingHandler.CheckStockDailyTradingTable();
+dataProcessingHandler.CheckTpexTable();
+dataProcessingHandler.SetTpexTable();
 ////計算平均
 //dataProcessingHandler.CalculateMovingAverageType();
