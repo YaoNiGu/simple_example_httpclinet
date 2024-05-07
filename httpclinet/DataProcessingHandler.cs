@@ -85,7 +85,7 @@ public class DataProcessingHandler
                    .Replace(" ", "")
                    .Replace("*", "star")}", n => new StockDailyTradingDbModel(n));
         var createTableList = codeDic.Keys.Except(existTableName).ToList();
-        dataProcessingService!.CreateStockDailyTradingTable(createTableList);
+        // dataProcessingService!.CreateStockDailyTradingTable(createTableList);
         #endregion
         //塞資料
         dataProcessingService!.InsertOrUpdateStockDailyTradingTable(codeDic, setDate);
@@ -147,7 +147,7 @@ public class DataProcessingHandler
         setTpexData(TpexResult);
     }
 
-    private static void setTpexData(TpexMainBoardQuote[] TpexInfoResult, DateTimeOffset? setDate = null)
+    private static void setTpexData(TpexMainBoardQuote[] TpexInfoResult)
     {
         var existTableName = dataProcessingService!.QueryTableName().Result.ToArray();
 
@@ -163,9 +163,9 @@ public class DataProcessingHandler
         dataProcessingService!.CreateTpexTable(createTableList);
         #endregion
         //塞資料
-        dataProcessingService!.InsertOrUpdateTpexTable(codeDic, setDate);
+        dataProcessingService!.InsertOrUpdateTpexTable(codeDic);
     }
-        public void CheckTpexTable()
+    public void CheckTpexTable()
     {
         var existTableName = dataProcessingService!.QueryTableName().Result.ToArray();
         dataProcessingService!.CheckTpexTableColumns(existTableName);

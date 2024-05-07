@@ -7,7 +7,8 @@ namespace httpcustom
     {
         public TpexMainBoardQuoteDBModel(TpexMainBoardQuote boardQuote)
         {
-            SecuritiesCompanyCode   = boardQuote.SecuritiesCompanyCode  ;
+            Date = boardQuote.Date;
+            SecuritiesCompanyCode  = boardQuote.SecuritiesCompanyCode  ;
             CompanyName  = boardQuote.CompanyName ;
             Close  = boardQuote.Close ;
             Change  = boardQuote.Change ;
@@ -28,6 +29,6 @@ namespace httpcustom
         /// <summary>
         /// 資料塞入日期
         /// </summary>
-        public DateTimeOffset? DataDate { get; set; }
+        // public DateTimeOffset? DataDate { get; set; }
     }
 }

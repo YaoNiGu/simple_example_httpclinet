@@ -13,7 +13,12 @@ namespace httpcustom
     /// </summary>
      public class TpexMainBoardQuote
     {
-        public TpexMainBoardQuote(string? securitiesCompanyCode = null,
+
+        public TpexMainBoardQuote() {
+            
+        }
+        public TpexMainBoardQuote(string? date =null,
+            string? securitiesCompanyCode = null,
             string? companyName = null,
             decimal? close = null,
             decimal? change = null,
@@ -29,6 +34,7 @@ namespace httpcustom
             decimal? nextLimitUp = null,
             decimal? nextLimitDown = null)
         {
+            Date = date;
             SecuritiesCompanyCode  = securitiesCompanyCode;
             CompanyName  = companyName;
             Close = close;
@@ -40,44 +46,57 @@ namespace httpcustom
             TransactionAmount = transactionAmount;
             TransactionNumber = transactionNumber;
             LatestBidPrice = latestBidPrice;
-            LatesAskPrice  =LatestAskPrice ;
+            LatesAskPrice  =LatesAskPrice ;
             Capitals = capitals ;
             NextLimitUp = nextLimitUp;
             NextLimitDown = nextLimitDown;
         }
-
-
+        public string? Date { get; set; }
         
         public string? SecuritiesCompanyCode { get; set; }
 
         public string? CompanyName { get; set; }
+        
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? Close { get; set; }
+        
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? Change { get; set; }
+        
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? Open { get; set; }
+        
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? High { get; set; }
+        
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? Low { get; set; }
-        [JsonConverter(typeof(StringToDecimalConverter))]
+        
+        [JsonConverter(typeof(StringToLongConverter))]
         public long? TradingShares { get; set; }
-        
+
+        [JsonConverter(typeof(StringToLongConverter))]
         public long? TransactionAmount { get; set; }
-        
+
+        [JsonConverter(typeof(StringToLongConverter))]
         public long? TransactionNumber { get; set; }
-       
-    
+
+        [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? LatestBidPrice { get; set; }
+
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? LatesAskPrice { get; set; }
+
+        [JsonConverter(typeof(StringToLongConverter))]
+        public long? Capitals { get; set; }
+
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? NextLimitUp { get; set; }
+
         [JsonConverter(typeof(StringToDecimalConverter))]
         public decimal? NextLimitDown { get; set; }
-        [JsonConverter(typeof(StringToDecimalConverter))]
-        public long? Capitals { get; set; }
+
+
 
     }
 

@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using httpclinet;
+using httpcustom;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -30,7 +31,7 @@ var dataProcessingHandler = new DataProcessingHandler(serviceProvider);
 ////塞入資料
 // dataProcessingHandler.SetStockDailyTradingTable();
 ////確認欄位(平常可以關掉)
-dataProcessingHandler.CheckTpexTable();
+// dataProcessingHandler.CheckTpexTable();
 dataProcessingHandler.SetTpexTable();
 ////計算平均
 //dataProcessingHandler.CalculateMovingAverageType();
